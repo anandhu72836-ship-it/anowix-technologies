@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anowix Technologies - Admin Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      color: #111827;
+    }
+
+    header {
+      background: #050608;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    button {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+    }
+
+    .logout {
+      background: #dc2626;
+    }
+
+    .container {
+      padding: 25px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .login, .dashboard {
+      display: none;
+    }
+
+    .login {
+      max-width: 400px;
+      margin: 80px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 15px;
+      box-sizing: border-box;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Anowix Technologies — Admin Dashboard</h1>
+    <button class="logout" id="logoutBtn" style="display:none;">Logout</button>
+  </header>
+
+  <div class="container">
+
+    <!-- LOGIN -->
+    <div class="login" id="loginBox">
+      <h2>Admin Login</h2>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Admin Email"
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
+
+      <button id="loginBtn">Login</button>
+
+      <div id="message"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+
+      <div class="card">
+        <h2>Registrations</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Program</th>
+            </tr>
+          </thead>
+
+          <tbody id="registrationsBody">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Enquiries</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+
+          <tbody id="enquiriesBody">
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+
+const SUPABASE_URL =
+  'https://batgyvezofkylbfuiwvr.supabase.co';
+
+const SUPABASE_KEY =
+  'sb_publishable_IV3o0ke3w2yFoj9VmysSEQ_j7hnQUgc';
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+const loginBox =
+  document.getElementById('loginBox');
+
+const dashboard =
+  document.getElementById('dashboard');
+
+const message =
+  document.getElementById('message');
+
+const logoutBtn =
+  document.getElementById('logoutBtn');
+
+
+async function login() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  message.textContent = 'Logging in...';
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    message.textContent =
+      'Login failed: ' + error.message;
+    return;
+  }
+
+  await checkAdmin();
+
+}
+
+
+async function checkAdmin() {
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    loginBox.style.display = 'block';
+    dashboard.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+  if (error || !data || data.role !== 'admin') {
+
+    await supabaseClient.auth.signOut();
+
+    message.textContent =
+      'Access denied. Admin only.';
+
+    loginBox.style.display = 'block';
+    dashboard.style.display = 'none';
+
+    return;
+  }
+
+  loginBox.style.display = 'none';
+  dashboard.style.display = 'block';
+  logoutBtn.style.display = 'block';
+
+  loadRegistrations();
+  loadEnquiries();
+}
+
+
+async function loadRegistrations() {
+
+  const { data, error } =
+    await supabaseClient
+      .from('registrations')
+      .select('name,email,phone,program')
+      .order('registered_at', {
+        ascending: false
+      });
+
+  const body =
+    document.getElementById('registrationsBody');
+
+  body.innerHTML = '';
+
+  if (error) {
+    body.innerHTML =
+      '<tr><td colspan="4">Unable to load registrations.</td></tr>';
+    return;
+  }
+
+  data.forEach(row => {
+
+    body.innerHTML += `
+      <tr>
+        <td>${row.name || ''}</td>
+        <td>${row.email || ''}</td>
+        <td>${row.phone || ''}</td>
+        <td>${row.program || ''}</td>
+      </tr>
+    `;
+
+  });
+}
+
+
+async function loadEnquiries() {
+
+  const { data, error } =
+    await supabaseClient
+      .from('enquiries')
+      .select('name,email,phone,message')
+      .order('created_at', {
+        ascending: false
+      });
+
+  const body =
+    document.getElementById('enquiriesBody');
+
+  body.innerHTML = '';
+
+  if (error) {
+    body.innerHTML =
+      '<tr><td colspan="4">Unable to load enquiries.</td></tr>';
+    return;
+  }
+
+  data.forEach(row => {
+
+    body.innerHTML += `
+      <tr>
+        <td>${row.name || ''}</td>
+        <td>${row.email || ''}</td>
+        <td>${row.phone || ''}</td>
+        <td>${row.message || ''}</td>
+      </tr>
+    `;
+
+  });
+}
+
+
+document
+  .getElementById('loginBtn')
+  .addEventListener('click', login);
+
+
+logoutBtn.addEventListener('click', async () => {
+
+  await supabaseClient.auth.signOut();
+
+  loginBox.style.display = 'block';
+  dashboard.style.display = 'none';
+  logoutBtn.style.display = 'none';
+
+});
+
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>
