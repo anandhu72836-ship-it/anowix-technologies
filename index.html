@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anowix Technologies | Innovate • Learn • Build</title>
+  <meta name="description" content="Anowix Technologies - Web, App, Software, AI and student programs." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="#home">
+      <img src="assets/anowix-logo.png" alt="Anowix Technologies" />
+    </a>
+    <button class="menu" aria-label="Open menu">☰</button>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#services">Services</a>
+      <a href="#internships">Internships</a>
+      <a href="#webinars">Webinars</a>
+      <a href="#hackathons">Hackathons</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+      <button class="login-btn" id="loginBtn">Login</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">ANOWIX TECHNOLOGIES</span>
+        <h1>We <span>Innovate.</span><br/>We Learn.<br/>We Build.</h1>
+        <p>Technology solutions for businesses and practical learning opportunities for students.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#services">Explore Services</a>
+          <a class="btn ghost" href="#internships">Join a Program</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="orb"></div>
+        <div class="floating-card card1">🌐 Website & App Development</div>
+        <div class="floating-card card2">🎓 Internships & Webinars</div>
+        <div class="floating-card card3">🏆 Hackathons & Projects</div>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="section-head">
+        <span class="eyebrow">WHAT WE BUILD</span>
+        <h2>Technology Services</h2>
+        <p>From idea to deployment, we build practical digital solutions.</p>
+      </div>
+      <div class="grid cards">
+        <article class="service"><b>🌐</b><h3>Website Development</h3><p>Responsive business websites and portals.</p></article>
+        <article class="service"><b>📱</b><h3>App Development</h3><p>Mobile and web applications for real use cases.</p></article>
+        <article class="service"><b>💻</b><h3>Software Development</h3><p>Custom software and business management systems.</p></article>
+        <article class="service"><b>🤖</b><h3>AI / ML Solutions</h3><p>AI-powered prototypes and automation.</p></article>
+        <article class="service"><b>🎨</b><h3>UI / UX Design</h3><p>Clean, modern and user-friendly interfaces.</p></article>
+        <article class="service"><b>☁️</b><h3>Cloud & Deployment</h3><p>Deployment, hosting and production support.</p></article>
+      </div>
+    </section>
+
+    <section id="internships" class="section dark-panel">
+      <div class="section-head">
+        <span class="eyebrow">LEARN</span>
+        <h2>Internships</h2>
+        <p>Practical project-based learning for students.</p>
+      </div>
+      <div class="program-row">
+        <div><strong>Web Development</strong><span>Project-based • Certificate</span></div>
+        <button class="btn small" data-program="Web Development Internship">Apply</button>
+      </div>
+      <div class="program-row">
+        <div><strong>App Development</strong><span>Project-based • Certificate</span></div>
+        <button class="btn small" data-program="App Development Internship">Apply</button>
+      </div>
+      <div class="program-row">
+        <div><strong>AI / ML</strong><span>Project-based • Certificate</span></div>
+        <button class="btn small" data-program="AI/ML Internship">Apply</button>
+      </div>
+    </section>
+
+    <section id="webinars" class="section">
+      <div class="section-head">
+        <span class="eyebrow">LEARN</span>
+        <h2>Free Webinars</h2>
+        <p>Live sessions designed to introduce students to current technologies.</p>
+      </div>
+      <div class="grid two">
+        <article class="event"><span class="tag">FREE</span><h3>Introduction to AI</h3><p>Beginner-friendly technology session.</p><button class="btn small" data-program="Introduction to AI Webinar">Register</button></article>
+        <article class="event"><span class="tag">FREE</span><h3>Building Your First Website</h3><p>Learn the fundamentals of web development.</p><button class="btn small" data-program="Building Your First Website Webinar">Register</button></article>
+      </div>
+    </section>
+
+    <section id="hackathons" class="section dark-panel">
+      <div class="section-head">
+        <span class="eyebrow">BUILD</span>
+        <h2>Hackathons</h2>
+        <p>Build, collaborate and showcase your ideas.</p>
+      </div>
+      <div class="hack-card">
+        <div><span class="tag">UPCOMING</span><h3>Anowix Innovation Hackathon</h3><p>Team-based challenge • Projects • Certificates</p></div>
+        <button class="btn primary" data-program="Anowix Innovation Hackathon">Register</button>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <div class="section-head">
+        <span class="eyebrow">OUR WORK</span>
+        <h2>Projects</h2>
+      </div>
+      <div class="grid two">
+        <article class="project"><span>01</span><h3>Business Management Platform</h3><p>Customer requests, projects and service tracking.</p></article>
+        <article class="project"><span>02</span><h3>Student Learning Portal</h3><p>Internships, webinars, registrations and certificates.</p></article>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact">
+      <div>
+        <span class="eyebrow">LET'S BUILD</span>
+        <h2>Have a project idea?</h2>
+        <p>Tell us what you want to build. Our team can turn the idea into a practical digital solution.</p>
+      </div>
+      <form id="contactForm">
+        <input required name="name" placeholder="Your name" />
+        <input required type="email" name="email" placeholder="Email address" />
+        <input name="phone" placeholder="Phone (optional)" />
+        <textarea required name="message" placeholder="Tell us about your project"></textarea>
+        <button class="btn primary" type="submit">Send Enquiry</button>
+        <small id="formStatus"></small>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <img src="assets/anowix-logo.png" alt="Anowix Technologies" />
+    <p>Innovate • Learn • Build</p>
+    <p>© 2026 Anowix Technologies. All rights reserved.</p>
+  </footer>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <button class="close" id="closeModal">×</button>
+      <h2 id="modalTitle">Register</h2>
+      <p id="selectedProgram"></p>
+      <form id="programForm">
+        <input required name="name" placeholder="Full name" />
+        <input required type="email" name="email" placeholder="Email address" />
+        <input name="phone" placeholder="Phone" />
+        <button class="btn primary" type="submit">Submit Registration</button>
+        <small id="programStatus"></small>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+
+<section id="contact-details" style="padding:30px 0"><h3>Contact Anowix Technologies</h3><p><strong>Email:</strong> <a href="mailto:anowixtechnologies123@gmail.com">anowixtechnologies123@gmail.com</a></p><p><strong>Phone:</strong> <a href="tel:+917708217553">+91 7708217553</a></p><p><strong>WhatsApp:</strong> <a href="https://wa.me/917708217553" target="_blank" rel="noopener">Chat on WhatsApp</a></p></section><a href="https://wa.me/917708217553" target="_blank" rel="noopener" aria-label="Chat with Anowix Technologies on WhatsApp" style="position:fixed;right:18px;bottom:18px;z-index:9999;padding:12px 16px;border-radius:999px;text-decoration:none;font-weight:700;background:#25D366;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.25)">WhatsApp</a>
+</body>
+</html>
