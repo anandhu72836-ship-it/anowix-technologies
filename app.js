@@ -1,46 +1,213 @@
+// ========================================
+// ANOWIX TECHNOLOGIES - APP.JS
+// ========================================
+
+// Supabase connection
+const SUPABASE_URL = 'https://batgyvezofkylbfuiwvr.supabase.co';
+
+const SUPABASE_KEY =
+  'sb_publishable_IV3o0ke3w2yFoj9VmysSEQ_j7hnQUgc';
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+// ========================================
+// ELEMENTS
+// ========================================
+
 const modal = document.getElementById('modal');
 const selectedProgram = document.getElementById('selectedProgram');
 const modalTitle = document.getElementById('modalTitle');
 
-document.querySelectorAll('[data-program]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    selectedProgram.textContent = btn.dataset.program;
-    modalTitle.textContent = btn.dataset.program.includes('Internship') ? 'Internship Application' : 'Registration';
+
+// ========================================
+// PROGRAM / INTERNSHIP / WEBINAR / HACKATHON
+// ========================================
+
+document.querySelectorAll('[data-program]').forEach(button => {
+
+  button.addEventListener('click', () => {
+
+    const program = button.dataset.program;
+
+    selectedProgram.textContent = program;
+
+    if (program.includes('Internship')) {
+      modalTitle.textContent = 'Internship Application';
+    } else {
+      modalTitle.textContent = 'Registration';
+    }
+
     modal.classList.add('open');
+
   });
+
 });
 
-document.getElementById('closeModal').addEventListener('click', () => modal.classList.remove('open'));
-modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
 
-document.getElementById('programForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target));
-  const registrations = JSON.parse(localStorage.getItem('anowix_registrations') || '[]');
-  registrations.push({...data, program: selectedProgram.textContent, createdAt: new Date().toISOString()});
-  localStorage.setItem('anowix_registrations', JSON.stringify(registrations));
-  document.getElementById('programStatus').textContent = 'Registration saved on this demo. Backend/database will be connected in the next phase.';
-  e.target.reset();
+// ========================================
+// CLOSE MODAL
+// ========================================
+
+document.getElementById('closeModal').addEventListener('click', () => {
+
+  modal.classList.remove('open');
+
 });
 
-document.getElementById('contactForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target));
-  const enquiries = JSON.parse(localStorage.getItem('anowix_enquiries') || '[]');
-  enquiries.push({...data, createdAt: new Date().toISOString()});
-  localStorage.setItem('anowix_enquiries', JSON.stringify(enquiries));
-  document.getElementById('formStatus').textContent = 'Enquiry saved on this demo. Connect Supabase to receive it centrally.';
-  e.target.reset();
+
+modal.addEventListener('click', event => {
+
+  if (event.target === modal) {
+    modal.classList.remove('open');
+  }
+
 });
+
+
+// ========================================
+// PROGRAM REGISTRATION
+// ========================================
+
+document.getElementById('programForm').addEventListener(
+  'submit',
+  async event => {
+
+    event.preventDefault();
+
+    const form = event.target;
+
+    const data = Object.fromEntries(
+      new FormData(form)
+    );
+
+    const registration = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      program: selectedProgram.textContent
+    };
+
+    const status =
+      document.getElementById('programStatus');
+
+    status.textContent = 'Submitting...';
+
+    try {
+
+      const { error } = await supabaseClient
+        .from('registrations')
+        .insert([registration]);
+
+      if (error) {
+        throw error;
+      }
+
+      status.textContent =
+        'Registration submitted successfully!';
+
+      form.reset();
+
+    } catch (error) {
+
+      console.error('Registration error:', error);
+
+      status.textContent =
+        'Registration failed. Please try again.';
+
+    }
+
+  }
+);
+
+
+// ========================================
+// CONTACT / ENQUIRY FORM
+// ========================================
+
+document.getElementById('contactForm').addEventListener(
+  'submit',
+  async event => {
+
+    event.preventDefault();
+
+    const form = event.target;
+
+    const data = Object.fromEntries(
+      new FormData(form)
+    );
+
+    const enquiry = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message
+    };
+
+    const status =
+      document.getElementById('formStatus');
+
+    status.textContent = 'Sending...';
+
+    try {
+
+      const { error } = await supabaseClient
+        .from('enquiries')
+        .insert([enquiry]);
+
+      if (error) {
+        throw error;
+      }
+
+      status.textContent =
+        'Your enquiry has been submitted successfully!';
+
+      form.reset();
+
+    } catch (error) {
+
+      console.error('Enquiry error:', error);
+
+      status.textContent =
+        'Enquiry could not be submitted. Please try again.';
+
+    }
+
+  }
+);
+
+
+// ========================================
+// MOBILE MENU
+// ========================================
+
 const menu = document.querySelector('.menu');
 const nav = document.querySelector('.navbar nav');
 
 menu.addEventListener('click', () => {
+
   nav.classList.toggle('open');
+
 });
 
+
 document.querySelectorAll('.navbar nav a').forEach(link => {
+
   link.addEventListener('click', () => {
+
     nav.classList.remove('open');
+
   });
+
 });
+
+
+// ========================================
+// CONNECTION TEST
+// ========================================
+
+console.log('Anowix Technologies app loaded.');
+console.log('Supabase connected.');
