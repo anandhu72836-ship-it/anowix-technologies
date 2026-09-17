@@ -1,565 +1,667 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Anowix Technologies | Innovate • Learn • Build</title>
+  <title>Anowix Technologies - Admin Dashboard</title>
 
-  <meta
-    name="description"
-    content="Anowix Technologies - Web, App, Software, AI and student programs."
-  />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #111827;
+    }
+
+    header {
+      background: #050608;
+      color: white;
+      padding: 18px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    button {
+      border: none;
+      padding: 11px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+      font-size: 14px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .logout {
+      background: #dc2626;
+    }
+
+    .refresh {
+      background: #2563eb;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 25px 0 40px;
+    }
+
+    .login {
+      max-width: 400px;
+      margin: 80px auto;
+      background: white;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    }
+
+    .login h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 220px;
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    .stat-card h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .welcome {
+      margin-bottom: 20px;
+      color: #4b5563;
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 15px;
+      }
+
+      header h1 {
+        font-size: 17px;
+      }
+
+      .container {
+        width: 94%;
+        padding-top: 20px;
+      }
+
+      .stat-card {
+        min-width: 100%;
+      }
+
+      .login {
+        margin: 50px auto;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <header class="navbar">
+<header>
+  <h1>Anowix Technologies — Admin</h1>
 
-    <a class="brand" href="#home">
-      <img src="anowix-logo.png" alt="Anowix Technologies" />
-    </a>
+  <button
+    class="logout"
+    id="logoutBtn"
+    style="display:none;">
+    Logout
+  </button>
+</header>
 
-    <button class="menu" aria-label="Open menu">☰</button>
+<div class="container">
 
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#services">Services</a>
-      <a href="#internships">Internships</a>
-      <a href="#webinars">Webinars</a>
-      <a href="#hackathons">Hackathons</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-      <button class="login-btn" id="loginBtn">Login</button>
-    </nav>
+  <!-- LOGIN -->
 
-  </header>
+  <div class="login" id="loginBox">
 
+    <h2>Admin Login</h2>
 
-  <main>
+    <input
+      type="email"
+      id="email"
+      placeholder="Admin Email"
+    >
 
-    <!-- HOME -->
-    <section id="home" class="hero">
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+    >
 
-      <div class="hero-copy">
+    <button id="loginBtn">
+      Login
+    </button>
 
-        <span class="eyebrow">ANOWIX TECHNOLOGIES</span>
+    <div id="message"></div>
 
-        <h1>
-          We <span>Innovate.</span><br />
-          We Learn.<br />
-          We Build.
-        </h1>
+  </div>
 
-        <p>
-          Technology solutions for businesses and practical learning
-          opportunities for students.
-        </p>
 
-        <div class="hero-actions">
-          <a class="btn primary" href="#services">Explore Services</a>
-          <a class="btn ghost" href="#internships">Join a Program</a>
-        </div>
+  <!-- DASHBOARD -->
 
-      </div>
+  <div class="dashboard" id="dashboard">
 
+    <h2>Welcome, Admin 👋</h2>
 
-      <div class="hero-card">
-
-        <div class="orb"></div>
-
-        <div class="floating-card card1">
-          🌐 Website & App Development
-        </div>
-
-        <div class="floating-card card2">
-          🎓 Internships & Webinars
-        </div>
-
-        <div class="floating-card card3">
-          🏆 Hackathons & Projects
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SERVICES -->
-    <section id="services" class="section">
-
-      <div class="section-head">
-
-        <span class="eyebrow">WHAT WE BUILD</span>
-
-        <h2>Technology Services</h2>
-
-        <p>
-          From idea to deployment, we build practical digital solutions.
-        </p>
-
-      </div>
-
-
-      <div class="grid cards">
-
-        <article class="service">
-          <b>🌐</b>
-          <h3>Website Development</h3>
-          <p>Responsive business websites and portals.</p>
-        </article>
-
-        <article class="service">
-          <b>📱</b>
-          <h3>App Development</h3>
-          <p>Mobile and web applications for real use cases.</p>
-        </article>
-
-        <article class="service">
-          <b>💻</b>
-          <h3>Software Development</h3>
-          <p>Custom software and business management systems.</p>
-        </article>
-
-        <article class="service">
-          <b>🤖</b>
-          <h3>AI / ML Solutions</h3>
-          <p>AI-powered prototypes and automation.</p>
-        </article>
-
-        <article class="service">
-          <b>🎨</b>
-          <h3>UI / UX Design</h3>
-          <p>Clean, modern and user-friendly interfaces.</p>
-        </article>
-
-        <article class="service">
-          <b>☁️</b>
-          <h3>Cloud & Deployment</h3>
-          <p>Deployment, hosting and production support.</p>
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- INTERNSHIPS -->
-    <section id="internships" class="section dark-panel">
-
-      <div class="section-head">
-
-        <span class="eyebrow">LEARN</span>
-
-        <h2>Internships</h2>
-
-        <p>
-          Practical project-based learning for students.
-        </p>
-
-      </div>
-
-
-      <div class="program-row">
-
-        <div>
-          <strong>Web Development</strong>
-          <span>Project-based • Certificate</span>
-        </div>
-
-        <button
-          class="btn small"
-          data-program="Web Development Internship"
-        >
-          Apply
-        </button>
-
-      </div>
-
-
-      <div class="program-row">
-
-        <div>
-          <strong>App Development</strong>
-          <span>Project-based • Certificate</span>
-        </div>
-
-        <button
-          class="btn small"
-          data-program="App Development Internship"
-        >
-          Apply
-        </button>
-
-      </div>
-
-
-      <div class="program-row">
-
-        <div>
-          <strong>AI / ML</strong>
-          <span>Project-based • Certificate</span>
-        </div>
-
-        <button
-          class="btn small"
-          data-program="AI/ML Internship"
-        >
-          Apply
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- WEBINARS -->
-    <section id="webinars" class="section">
-
-      <div class="section-head">
-
-        <span class="eyebrow">LEARN</span>
-
-        <h2>Free Webinars</h2>
-
-        <p>
-          Live sessions designed to introduce students to current technologies.
-        </p>
-
-      </div>
-
-
-      <div class="grid two">
-
-        <article class="event">
-
-          <span class="tag">FREE</span>
-
-          <h3>Introduction to AI</h3>
-
-          <p>
-            Beginner-friendly technology session.
-          </p>
-
-          <button
-            class="btn small"
-            data-program="Introduction to AI Webinar"
-          >
-            Register
-          </button>
-
-        </article>
-
-
-        <article class="event">
-
-          <span class="tag">FREE</span>
-
-          <h3>Building Your First Website</h3>
-
-          <p>
-            Learn the fundamentals of web development.
-          </p>
-
-          <button
-            class="btn small"
-            data-program="Building Your First Website Webinar"
-          >
-            Register
-          </button>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- HACKATHONS -->
-    <section id="hackathons" class="section dark-panel">
-
-      <div class="section-head">
-
-        <span class="eyebrow">BUILD</span>
-
-        <h2>Hackathons</h2>
-
-        <p>
-          Build, collaborate and showcase your ideas.
-        </p>
-
-      </div>
-
-
-      <div class="hack-card">
-
-        <div>
-
-          <span class="tag">UPCOMING</span>
-
-          <h3>Anowix Innovation Hackathon</h3>
-
-          <p>
-            Team-based challenge • Projects • Certificates
-          </p>
-
-        </div>
-
-
-        <button
-          class="btn primary"
-          data-program="Anowix Innovation Hackathon"
-        >
-          Register
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- PROJECTS -->
-    <section id="projects" class="section">
-
-      <div class="section-head">
-
-        <span class="eyebrow">OUR WORK</span>
-
-        <h2>Projects</h2>
-
-      </div>
-
-
-      <div class="grid two">
-
-        <article class="project">
-
-          <span>01</span>
-
-          <h3>Business Management Platform</h3>
-
-          <p>
-            Customer requests, projects and service tracking.
-          </p>
-
-        </article>
-
-
-        <article class="project">
-
-          <span>02</span>
-
-          <h3>Student Learning Portal</h3>
-
-          <p>
-            Internships, webinars, registrations and certificates.
-          </p>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- CONTACT -->
-    <section id="contact" class="section contact">
-
-      <div>
-
-        <span class="eyebrow">LET'S BUILD</span>
-
-        <h2>Have a project idea?</h2>
-
-        <p>
-          Tell us what you want to build. Our team can turn the idea
-          into a practical digital solution.
-        </p>
-
-      </div>
-
-
-      <form id="contactForm">
-
-        <input
-          required
-          name="name"
-          placeholder="Your name"
-        />
-
-        <input
-          required
-          type="email"
-          name="email"
-          placeholder="Email address"
-        />
-
-        <input
-          name="phone"
-          placeholder="Phone (optional)"
-        />
-
-        <textarea
-          required
-          name="message"
-          placeholder="Tell us about your project"
-        ></textarea>
-
-        <button
-          class="btn primary"
-          type="submit"
-        >
-          Send Enquiry
-        </button>
-
-        <small id="formStatus"></small>
-
-      </form>
-
-    </section>
-
-  </main>
-
-
-  <!-- FOOTER -->
-  <footer>
-
-    <img
-      src="anowix-logo.png"
-      alt="Anowix Technologies"
-    />
-
-    <p>Innovate • Learn • Build</p>
-
-    <p>
-      © 2026 Anowix Technologies. All rights reserved.
+    <p class="welcome">
+      Manage registrations and customer enquiries from here.
     </p>
 
-  </footer>
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+      <div class="stat-card">
+        <h3>Total Registrations</h3>
+        <h1 id="registrationCount">0</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total Enquiries</h3>
+        <h1 id="enquiryCount">0</h1>
+      </div>
+
+    </div>
 
 
-  <!-- REGISTRATION MODAL -->
-  <div class="modal" id="modal">
+    <!-- REFRESH -->
 
-    <div class="modal-box">
-
-      <button
-        class="close"
-        id="closeModal"
-      >
-        ×
-      </button>
-
-      <h2 id="modalTitle">
-        Register
-      </h2>
-
-      <p id="selectedProgram"></p>
+    <button
+      class="refresh"
+      id="refreshBtn">
+      🔄 Refresh Data
+    </button>
 
 
-      <form id="programForm">
+    <!-- REGISTRATIONS -->
 
-        <input
-          required
-          name="name"
-          placeholder="Full name"
-        />
+    <div class="card">
 
-        <input
-          required
-          type="email"
-          name="email"
-          placeholder="Email address"
-        />
+      <h2>📋 Registrations</h2>
 
-        <input
-          name="phone"
-          placeholder="Phone"
-        />
+      <table>
 
-        <button
-          class="btn primary"
-          type="submit"
-        >
-          Submit Registration
-        </button>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Program</th>
+          </tr>
+        </thead>
 
-        <small id="programStatus"></small>
+        <tbody id="registrationsBody">
+        </tbody>
 
-      </form>
+      </table>
+
+    </div>
+
+
+    <!-- ENQUIRIES -->
+
+    <div class="card">
+
+      <h2>📩 Enquiries</h2>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+
+        <tbody id="enquiriesBody">
+        </tbody>
+
+      </table>
 
     </div>
 
   </div>
 
-
-  <!-- SUPABASE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- APP JS -->
-  <script src="app.js"></script>
+</div>
 
 
-  <!-- CONTACT DETAILS -->
-  <section
-    id="contact-details"
-    style="padding:30px 0"
-  >
+<script>
 
-    <h3>Contact Anowix Technologies</h3>
+const SUPABASE_URL =
+  'https://batgyvezofkylbfuiwvr.supabase.co';
 
-    <p>
-      <strong>Email:</strong>
-      <a href="mailto:anowixtechnologies123@gmail.com">
-        anowixtechnologies123@gmail.com
-      </a>
-    </p>
+const SUPABASE_KEY =
+  'sb_publishable_IV3o0ke3w2yFoj9VmysSEQ_j7hnQUgc';
 
-    <p>
-      <strong>Phone:</strong>
-      <a href="tel:+917708217553">
-        +91 7708217553
-      </a>
-    </p>
-
-    <p>
-      <strong>WhatsApp:</strong>
-      <a
-        href="https://wa.me/917708217553"
-        target="_blank"
-        rel="noopener"
-      >
-        Chat on WhatsApp
-      </a>
-    </p>
-
-  </section>
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-  <!-- WHATSAPP BUTTON -->
-  <a
-    href="https://wa.me/917708217553"
-    target="_blank"
-    rel="noopener"
-    aria-label="Chat with Anowix Technologies on WhatsApp"
-    style="
-      position:fixed;
-      right:18px;
-      bottom:18px;
-      z-index:9999;
-      padding:12px 16px;
-      border-radius:999px;
-      text-decoration:none;
-      font-weight:700;
-      background:#25D366;
-      color:#fff;
-      box-shadow:0 4px 16px rgba(0,0,0,.25)
-    "
-  >
-    WhatsApp
-  </a>
+const loginBox =
+  document.getElementById('loginBox');
+
+const dashboard =
+  document.getElementById('dashboard');
+
+const message =
+  document.getElementById('message');
+
+const logoutBtn =
+  document.getElementById('logoutBtn');
+
+const refreshBtn =
+  document.getElementById('refreshBtn');
+
+
+
+/* ================================
+   LOGIN
+================================ */
+
+async function login() {
+
+  const email =
+    document.getElementById('email').value.trim();
+
+  const password =
+    document.getElementById('password').value;
+
+  if (!email || !password) {
+
+    message.textContent =
+      'Please enter email and password.';
+
+    return;
+  }
+
+  message.textContent =
+    'Logging in...';
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  if (error) {
+
+    message.textContent =
+      'Login failed: ' + error.message;
+
+    return;
+  }
+
+  message.textContent = '';
+
+  await checkAdmin();
+}
+
+
+
+/* ================================
+   CHECK ADMIN
+================================ */
+
+async function checkAdmin() {
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    loginBox.style.display = 'block';
+    dashboard.style.display = 'none';
+    logoutBtn.style.display = 'none';
+
+    return;
+  }
+
+
+  const { data, error } =
+    await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+
+  if (
+    error ||
+    !data ||
+    data.role !== 'admin'
+  ) {
+
+    await supabaseClient.auth.signOut();
+
+    loginBox.style.display = 'block';
+    dashboard.style.display = 'none';
+    logoutBtn.style.display = 'none';
+
+    message.textContent =
+      'Access denied. Admin only.';
+
+    return;
+  }
+
+
+  loginBox.style.display = 'none';
+
+  dashboard.style.display = 'block';
+
+  logoutBtn.style.display = 'block';
+
+
+  await loadRegistrations();
+
+  await loadEnquiries();
+}
+
+
+
+/* ================================
+   LOAD REGISTRATIONS
+================================ */
+
+async function loadRegistrations() {
+
+  const { data, error } =
+    await supabaseClient
+      .from('registrations')
+      .select(
+        'name,email,phone,program'
+      )
+      .order(
+        'registered_at',
+        {
+          ascending: false
+        }
+      );
+
+
+  const body =
+    document.getElementById(
+      'registrationsBody'
+    );
+
+
+  body.innerHTML = '';
+
+
+  if (error) {
+
+    body.innerHTML =
+      '<tr><td colspan="4">Unable to load registrations.</td></tr>';
+
+    document.getElementById(
+      'registrationCount'
+    ).textContent = '0';
+
+    return;
+  }
+
+
+  document.getElementById(
+    'registrationCount'
+  ).textContent = data.length;
+
+
+  if (data.length === 0) {
+
+    body.innerHTML =
+      '<tr><td colspan="4">No registrations yet.</td></tr>';
+
+    return;
+  }
+
+
+  data.forEach(row => {
+
+    body.innerHTML += `
+      <tr>
+        <td>${row.name || ''}</td>
+        <td>${row.email || ''}</td>
+        <td>${row.phone || ''}</td>
+        <td>${row.program || ''}</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+
+
+/* ================================
+   LOAD ENQUIRIES
+================================ */
+
+async function loadEnquiries() {
+
+  const { data, error } =
+    await supabaseClient
+      .from('enquiries')
+      .select(
+        'name,email,phone,message'
+      );
+
+
+  const body =
+    document.getElementById(
+      'enquiriesBody'
+    );
+
+
+  body.innerHTML = '';
+
+
+  if (error) {
+
+    body.innerHTML =
+      '<tr><td colspan="4">Unable to load enquiries.</td></tr>';
+
+    document.getElementById(
+      'enquiryCount'
+    ).textContent = '0';
+
+    return;
+  }
+
+
+  document.getElementById(
+    'enquiryCount'
+  ).textContent = data.length;
+
+
+  if (data.length === 0) {
+
+    body.innerHTML =
+      '<tr><td colspan="4">No enquiries yet.</td></tr>';
+
+    return;
+  }
+
+
+  data.forEach(row => {
+
+    body.innerHTML += `
+      <tr>
+        <td>${row.name || ''}</td>
+        <td>${row.email || ''}</td>
+        <td>${row.phone || ''}</td>
+        <td>${row.message || ''}</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+
+
+/* ================================
+   REFRESH
+================================ */
+
+refreshBtn.addEventListener(
+  'click',
+  async () => {
+
+    refreshBtn.textContent =
+      'Refreshing...';
+
+    await loadRegistrations();
+
+    await loadEnquiries();
+
+    refreshBtn.textContent =
+      '🔄 Refresh Data';
+
+  }
+);
+
+
+
+/* ================================
+   LOGIN BUTTON
+================================ */
+
+document
+  .getElementById('loginBtn')
+  .addEventListener(
+    'click',
+    login
+  );
+
+
+
+/* ================================
+   LOGOUT
+================================ */
+
+logoutBtn.addEventListener(
+  'click',
+  async () => {
+
+    await supabaseClient.auth.signOut();
+
+    loginBox.style.display = 'block';
+
+    dashboard.style.display = 'none';
+
+    logoutBtn.style.display = 'none';
+
+    message.textContent = '';
+
+  }
+);
+
+
+
+/* ================================
+   START
+================================ */
+
+checkAdmin();
+
+</script>
 
 </body>
 </html>
