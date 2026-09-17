@@ -1,663 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anowix Technologies - Admin Dashboard</title>
 
-  <title>Anowix Technologies - Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fa;
+  color:#111827
+}
+header{
+  background:#050608;
+  color:white;
+  padding:18px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+header h1{margin:0;font-size:20px}
+button{
+  border:0;
+  padding:11px 18px;
+  border-radius:7px;
+  cursor:pointer;
+  color:white;
+  background:#111827
+}
+.logout{background:#dc2626}
+.refresh{background:#2563eb;margin-bottom:20px}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+.container{
+  width:92%;
+  max-width:1200px;
+  margin:auto;
+  padding:25px 0
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      color: #111827;
-    }
+.login,.card,.stat{
+  background:white;
+  border-radius:12px;
+  box-shadow:0 3px 15px rgba(0,0,0,.08)
+}
 
-    header {
-      background: #050608;
-      color: white;
-      padding: 18px 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
+.login{
+  max-width:400px;
+  margin:70px auto;
+  padding:28px
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+input,textarea,select{
+  width:100%;
+  padding:12px;
+  margin:7px 0 12px;
+  border:1px solid #d1d5db;
+  border-radius:7px
+}
 
-    button {
-      border: none;
-      padding: 11px 18px;
-      border-radius: 7px;
-      cursor: pointer;
-      background: #111827;
-      color: white;
-      font-size: 14px;
-    }
+textarea{min-height:90px}
 
-    button:hover {
-      opacity: 0.9;
-    }
+.dashboard{display:none}
 
-    .logout {
-      background: #dc2626;
-    }
+.stats{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  margin:20px 0
+}
 
-    .refresh {
-      background: #2563eb;
-      margin-bottom: 20px;
-    }
+.stat{
+  flex:1;
+  min-width:200px;
+  padding:22px;
+  text-align:center
+}
 
-    .container {
-      width: 92%;
-      max-width: 1200px;
-      margin: auto;
-      padding: 25px 0 40px;
-    }
+.stat h3{
+  color:#6b7280;
+  margin:0 0 8px
+}
 
-    .login {
-      max-width: 400px;
-      margin: 80px auto;
-      background: white;
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-    }
+.stat h2{font-size:35px;margin:0}
 
-    .login h2 {
-      margin-top: 0;
-    }
+.card{
+  padding:22px;
+  margin-bottom:25px;
+  overflow-x:auto
+}
 
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 15px;
-      border: 1px solid #d1d5db;
-      border-radius: 7px;
-      font-size: 15px;
-    }
+.card h2{margin-top:0}
 
-    .dashboard {
-      display: none;
-    }
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px
+}
 
-    .stats {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
-    }
+th,td{
+  padding:11px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left
+}
 
-    .stat-card {
-      flex: 1;
-      min-width: 220px;
-      background: white;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      text-align: center;
-    }
+th{background:#f3f4f6}
 
-    .stat-card h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      color: #6b7280;
-    }
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
 
-    .stat-card h1 {
-      margin: 0;
-      font-size: 36px;
-    }
+.form-grid .full{grid-column:1/-1}
 
-    .card {
-      background: white;
-      padding: 22px;
-      margin-bottom: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      overflow-x: auto;
-    }
+.add-btn{background:#16a34a}
 
-    .card h2 {
-      margin-top: 0;
-    }
+.delete-btn{
+  background:#dc2626;
+  padding:7px 12px
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 650px;
-    }
+#message{
+  margin-top:12px;
+  font-weight:bold
+}
 
-    th,
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-    }
-
-    th {
-      background: #f3f4f6;
-    }
-
-    #message {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    .welcome {
-      margin-bottom: 20px;
-      color: #4b5563;
-    }
-
-    @media (max-width: 600px) {
-
-      header {
-        padding: 15px;
-      }
-
-      header h1 {
-        font-size: 17px;
-      }
-
-      .container {
-        width: 94%;
-        padding-top: 20px;
-      }
-
-      .stat-card {
-        min-width: 100%;
-      }
-
-      .login {
-        margin: 50px auto;
-      }
-    }
-  </style>
+@media(max-width:600px){
+  header h1{font-size:16px}
+  .container{width:94%}
+  .stat{min-width:100%}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid .full{grid-column:auto}
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>Anowix Technologies — Admin</h1>
-
-  <button
-    class="logout"
-    id="logoutBtn"
-    style="display:none;">
-    Logout
-  </button>
+  <button class="logout" id="logoutBtn" style="display:none">Logout</button>
 </header>
 
 <div class="container">
 
-  <!-- LOGIN -->
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+  <h2>🔐 Admin Login</h2>
 
-  <div class="login" id="loginBox">
+  <input type="email" id="email" placeholder="Admin Email">
+  <input type="password" id="password" placeholder="Password">
 
-    <h2>Admin Login</h2>
+  <button id="loginBtn">Login</button>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Admin Email"
-    >
+  <div id="message"></div>
+</div>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-    >
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
 
-    <button id="loginBtn">
-      Login
-    </button>
+<h2>Welcome, Admin 👋</h2>
+<p>Manage Anowix Technologies website data.</p>
 
-    <div id="message"></div>
+<!-- STATS -->
+<div class="stats">
 
-  </div>
+<div class="stat">
+<h3>Total Registrations</h3>
+<h2 id="registrationCount">0</h2>
+</div>
 
+<div class="stat">
+<h3>Total Enquiries</h3>
+<h2 id="enquiryCount">0</h2>
+</div>
 
-  <!-- DASHBOARD -->
-
-  <div class="dashboard" id="dashboard">
-
-    <h2>Welcome, Admin 👋</h2>
-
-    <p class="welcome">
-      Manage registrations and customer enquiries from here.
-    </p>
-
-
-    <!-- STATISTICS -->
-
-    <div class="stats">
-
-      <div class="stat-card">
-        <h3>Total Registrations</h3>
-        <h1 id="registrationCount">0</h1>
-      </div>
-
-      <div class="stat-card">
-        <h3>Total Enquiries</h3>
-        <h1 id="enquiryCount">0</h1>
-      </div>
-
-    </div>
-
-
-    <!-- REFRESH -->
-
-    <button
-      class="refresh"
-      id="refreshBtn">
-      🔄 Refresh Data
-    </button>
-
-
-    <!-- REGISTRATIONS -->
-
-    <div class="card">
-
-      <h2>📋 Registrations</h2>
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Program</th>
-          </tr>
-        </thead>
-
-        <tbody id="registrationsBody">
-        </tbody>
-
-      </table>
-
-    </div>
-
-
-    <!-- ENQUIRIES -->
-
-    <div class="card">
-
-      <h2>📩 Enquiries</h2>
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Message</th>
-          </tr>
-        </thead>
-
-        <tbody id="enquiriesBody">
-        </tbody>
-
-      </table>
-
-    </div>
-
-  </div>
+<div class="stat">
+<h3>Total Programs</h3>
+<h2 id="programCount">0</h2>
+</div>
 
 </div>
 
+<button class="refresh" id="refreshBtn">🔄 Refresh Data</button>
+
+<!-- PROGRAMS -->
+<div class="card">
+
+<h2>🎓 Manage Programs</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Program Title</label>
+<input id="programTitle" placeholder="Python Full Stack">
+</div>
+
+<div>
+<label>Type</label>
+<input id="programType" placeholder="Internship">
+</div>
+
+<div class="full">
+<label>Description</label>
+<textarea id="programDescription" placeholder="Program description"></textarea>
+</div>
+
+<div>
+<label>Start Date</label>
+<input type="date" id="programStart">
+</div>
+
+<div>
+<label>End Date</label>
+<input type="date" id="programEnd">
+</div>
+
+<div>
+<label>Fee</label>
+<input type="number" id="programFee" placeholder="0">
+</div>
+
+<div>
+<label>Status</label>
+<select id="programStatus">
+<option value="open">Open</option>
+<option value="closed">Closed</option>
+</select>
+</div>
+
+</div>
+
+<br>
+
+<button class="add-btn" id="addProgramBtn">
+➕ Add Program
+</button>
+
+<br><br>
+
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Type</th>
+<th>Fee</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="programsBody"></tbody>
+</table>
+
+</div>
+
+<!-- REGISTRATIONS -->
+<div class="card">
+
+<h2>📋 Registrations</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Program</th>
+</tr>
+</thead>
+
+<tbody id="registrationsBody"></tbody>
+
+</table>
+
+</div>
+
+<!-- ENQUIRIES -->
+<div class="card">
+
+<h2>📩 Enquiries</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Message</th>
+</tr>
+</thead>
+
+<tbody id="enquiriesBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+</div>
 
 <script>
 
 const SUPABASE_URL =
-  'https://batgyvezofkylbfuiwvr.supabase.co';
+'https://batgyvezofkylbfuiwvr.supabase.co';
 
 const SUPABASE_KEY =
-  'sb_publishable_IV3o0ke3w2yFoj9VmysSEQ_j7hnQUgc';
+'sb_publishable_IV3o0ke3w2yFoj9VmysSEQ_j7hnQUgc';
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 const loginBox =
-  document.getElementById('loginBox');
+document.getElementById('loginBox');
 
 const dashboard =
-  document.getElementById('dashboard');
+document.getElementById('dashboard');
 
 const message =
-  document.getElementById('message');
+document.getElementById('message');
 
 const logoutBtn =
-  document.getElementById('logoutBtn');
+document.getElementById('logoutBtn');
 
-const refreshBtn =
-  document.getElementById('refreshBtn');
+async function login(){
 
+const email =
+document.getElementById('email').value.trim();
 
+const password =
+document.getElementById('password').value;
 
-/* ================================
-   LOGIN
-================================ */
-
-async function login() {
-
-  const email =
-    document.getElementById('email').value.trim();
-
-  const password =
-    document.getElementById('password').value;
-
-  if (!email || !password) {
-
-    message.textContent =
-      'Please enter email and password.';
-
-    return;
-  }
-
-  message.textContent =
-    'Logging in...';
-
-  const { error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-  if (error) {
-
-    message.textContent =
-      'Login failed: ' + error.message;
-
-    return;
-  }
-
-  message.textContent = '';
-
-  await checkAdmin();
+if(!email || !password){
+message.textContent='Enter email and password.';
+return;
 }
 
+message.textContent='Logging in...';
 
+const {error} =
+await supabaseClient.auth.signInWithPassword({
+email,
+password
+});
 
-/* ================================
-   CHECK ADMIN
-================================ */
-
-async function checkAdmin() {
-
-  const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
-
-
-  if (!user) {
-
-    loginBox.style.display = 'block';
-    dashboard.style.display = 'none';
-    logoutBtn.style.display = 'none';
-
-    return;
-  }
-
-
-  const { data, error } =
-    await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-
-  if (
-    error ||
-    !data ||
-    data.role !== 'admin'
-  ) {
-
-    await supabaseClient.auth.signOut();
-
-    loginBox.style.display = 'block';
-    dashboard.style.display = 'none';
-    logoutBtn.style.display = 'none';
-
-    message.textContent =
-      'Access denied. Admin only.';
-
-    return;
-  }
-
-
-  loginBox.style.display = 'none';
-
-  dashboard.style.display = 'block';
-
-  logoutBtn.style.display = 'block';
-
-
-  await loadRegistrations();
-
-  await loadEnquiries();
+if(error){
+message.textContent='Login failed: '+error.message;
+return;
 }
 
-
-
-/* ================================
-   LOAD REGISTRATIONS
-================================ */
-
-async function loadRegistrations() {
-
-  const { data, error } =
-    await supabaseClient
-      .from('registrations')
-      .select(
-        'name,email,phone,program'
-      )
-      .order(
-        'registered_at',
-        {
-          ascending: false
-        }
-      );
-
-
-  const body =
-    document.getElementById(
-      'registrationsBody'
-    );
-
-
-  body.innerHTML = '';
-
-
-  if (error) {
-
-    body.innerHTML =
-      '<tr><td colspan="4">Unable to load registrations.</td></tr>';
-
-    document.getElementById(
-      'registrationCount'
-    ).textContent = '0';
-
-    return;
-  }
-
-
-  document.getElementById(
-    'registrationCount'
-  ).textContent = data.length;
-
-
-  if (data.length === 0) {
-
-    body.innerHTML =
-      '<tr><td colspan="4">No registrations yet.</td></tr>';
-
-    return;
-  }
-
-
-  data.forEach(row => {
-
-    body.innerHTML += `
-      <tr>
-        <td>${row.name || ''}</td>
-        <td>${row.email || ''}</td>
-        <td>${row.phone || ''}</td>
-        <td>${row.program || ''}</td>
-      </tr>
-    `;
-
-  });
+message.textContent='';
+await checkAdmin();
 
 }
 
+async function checkAdmin(){
 
+const {
+data:{user}
+}=await supabaseClient.auth.getUser();
 
-/* ================================
-   LOAD ENQUIRIES
-================================ */
+if(!user){
+loginBox.style.display='block';
+dashboard.style.display='none';
+logoutBtn.style.display='none';
+return;
+}
 
-async function loadEnquiries() {
+const {data,error} =
+await supabaseClient
+.from('profiles')
+.select('role')
+.eq('id',user.id)
+.single();
 
-  const { data, error } =
-    await supabaseClient
-      .from('enquiries')
-      .select(
-        'name,email,phone,message'
-      );
+if(error || !data || data.role!=='admin'){
 
+await supabaseClient.auth.signOut();
 
-  const body =
-    document.getElementById(
-      'enquiriesBody'
-    );
+loginBox.style.display='block';
+dashboard.style.display='none';
+logoutBtn.style.display='none';
 
+message.textContent='Access denied. Admin only.';
 
-  body.innerHTML = '';
+return;
+}
 
+loginBox.style.display='none';
+dashboard.style.display='block';
+logoutBtn.style.display='block';
 
-  if (error) {
-
-    body.innerHTML =
-      '<tr><td colspan="4">Unable to load enquiries.</td></tr>';
-
-    document.getElementById(
-      'enquiryCount'
-    ).textContent = '0';
-
-    return;
-  }
-
-
-  document.getElementById(
-    'enquiryCount'
-  ).textContent = data.length;
-
-
-  if (data.length === 0) {
-
-    body.innerHTML =
-      '<tr><td colspan="4">No enquiries yet.</td></tr>';
-
-    return;
-  }
-
-
-  data.forEach(row => {
-
-    body.innerHTML += `
-      <tr>
-        <td>${row.name || ''}</td>
-        <td>${row.email || ''}</td>
-        <td>${row.phone || ''}</td>
-        <td>${row.message || ''}</td>
-      </tr>
-    `;
-
-  });
+await loadAll();
 
 }
 
+async function loadAll(){
 
+await loadPrograms();
+await loadRegistrations();
+await loadEnquiries();
 
-/* ================================
-   REFRESH
-================================ */
+}
 
-refreshBtn.addEventListener(
-  'click',
-  async () => {
+async function loadPrograms(){
 
-    refreshBtn.textContent =
-      'Refreshing...';
+const {data,error} =
+await supabaseClient
+.from('programs')
+.select('*')
+.order('created_at',{ascending:false});
 
-    await loadRegistrations();
+const body =
+document.getElementById('programsBody');
 
-    await loadEnquiries();
+body.innerHTML='';
 
-    refreshBtn.textContent =
-      '🔄 Refresh Data';
+if(error){
 
-  }
-);
+body.innerHTML=
+'<tr><td colspan="5">Unable to load programs.</td></tr>';
 
+return;
+}
 
+document.getElementById('programCount')
+.textContent=data.length;
 
-/* ================================
-   LOGIN BUTTON
-================================ */
+if(data.length===0){
+
+body.innerHTML=
+'<tr><td colspan="5">No programs yet.</td></tr>';
+
+return;
+}
+
+data.forEach(row=>{
+
+const tr=document.createElement('tr');
+
+tr.innerHTML=`
+<td>${row.title || ''}</td>
+<td>${row.type || ''}</td>
+<td>${row.fee || 0}</td>
+<td>${row.status || ''}</td>
+<td>
+<button class="delete-btn"
+onclick="deleteProgram(${row.id})">
+Delete
+</button>
+</td>
+`;
+
+body.appendChild(tr);
+
+});
+
+}
+
+async function deleteProgram(id){
+
+if(!confirm('Delete this program?')) return;
+
+const {error} =
+await supabaseClient
+.from('programs')
+.delete()
+.eq('id',id);
+
+if(error){
+
+alert('Delete failed: '+error.message);
+return;
+
+}
+
+await loadPrograms();
+
+}
+
+async function addProgram(){
+
+const title =
+document.getElementById('programTitle').value.trim();
+
+const type =
+document.getElementById('programType').value.trim();
+
+const description =
+document.getElementById('programDescription').value.trim();
+
+const start_date =
+document.getElementById('programStart').value || null;
+
+const end_date =
+document.getElementById('programEnd').value || null;
+
+const fee =
+document.getElementById('programFee').value || 0;
+
+const status =
+document.getElementById('programStatus').value;
+
+if(!title || !type){
+
+alert('Title and Type are required.');
+
+return;
+
+}
+
+const {error} =
+await supabaseClient
+.from('programs')
+.insert([{
+title,
+type,
+description,
+start_date,
+end_date,
+fee,
+status
+}]);
+
+if(error){
+
+alert('Program add failed: '+error.message);
+return;
+
+}
+
+alert('Program added successfully!');
+
+document.getElementById('programTitle').value='';
+document.getElementById('programType').value='';
+document.getElementById('programDescription').value='';
+document.getElementById('programStart').value='';
+document.getElementById('programEnd').value='';
+document.getElementById('programFee').value='';
+
+await loadPrograms();
+
+}
+
+async function loadRegistrations(){
+
+const {data,error} =
+await supabaseClient
+.from('registrations')
+.select('name,email,phone,program')
+.order('registered_at',{ascending:false});
+
+const body =
+document.getElementById('registrationsBody');
+
+body.innerHTML='';
+
+if(error){
+
+body.innerHTML=
+'<tr><td colspan="4">Unable to load registrations.</td></tr>';
+
+document.getElementById('registrationCount')
+.textContent='0';
+
+return;
+}
+
+document.getElementById('registrationCount')
+.textContent=data.length;
+
+if(data.length===0){
+
+body.innerHTML=
+'<tr><td colspan="4">No registrations yet.</td></tr>';
+
+return;
+}
+
+data.forEach(row=>{
+
+const tr=document.createElement('tr');
+
+tr.innerHTML=`
+<td>${row.name || ''}</td>
+<td>${row.email || ''}</td>
+<td>${row.phone || ''}</td>
+<td>${row.program || ''}</td>
+`;
+
+body.appendChild(tr);
+
+});
+
+}
+
+async function loadEnquiries(){
+
+const {data,error} =
+await supabaseClient
+.from('enquiries')
+.select('name,email,phone,message');
+
+const body =
+document.getElementById('enquiriesBody');
+
+body.innerHTML='';
+
+if(error){
+
+body.innerHTML=
+'<tr><td colspan="4">Unable to load enquiries.</td></tr>';
+
+document.getElementById('enquiryCount')
+.textContent='0';
+
+return;
+}
+
+document.getElementById('enquiryCount')
+.textContent=data.length;
+
+if(data.length===0){
+
+body.innerHTML=
+'<tr><td colspan="4">No enquiries yet.</td></tr>';
+
+return;
+}
+
+data.forEach(row=>{
+
+const tr=document.createElement('tr');
+
+tr.innerHTML=`
+<td>${row.name || ''}</td>
+<td>${row.email || ''}</td>
+<td>${row.phone || ''}</td>
+<td>${row.message || ''}</td>
+`;
+
+body.appendChild(tr);
+
+});
+
+}
 
 document
-  .getElementById('loginBtn')
-  .addEventListener(
-    'click',
-    login
-  );
+.getElementById('loginBtn')
+.addEventListener('click',login);
 
+document
+.getElementById('addProgramBtn')
+.addEventListener('click',addProgram);
 
+document
+.getElementById('refreshBtn')
+.addEventListener('click',loadAll);
 
-/* ================================
-   LOGOUT
-================================ */
+logoutBtn.addEventListener('click',async()=>{
 
-logoutBtn.addEventListener(
-  'click',
-  async () => {
+await supabaseClient.auth.signOut();
 
-    await supabaseClient.auth.signOut();
+loginBox.style.display='block';
+dashboard.style.display='none';
+logoutBtn.style.display='none';
 
-    loginBox.style.display = 'block';
-
-    dashboard.style.display = 'none';
-
-    logoutBtn.style.display = 'none';
-
-    message.textContent = '';
-
-  }
-);
-
-
-
-/* ================================
-   START
-================================ */
+});
 
 checkAdmin();
 
