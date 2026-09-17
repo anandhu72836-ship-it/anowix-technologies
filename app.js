@@ -32,3 +32,15 @@ document.getElementById('contactForm').addEventListener('submit', e => {
   document.getElementById('formStatus').textContent = 'Enquiry saved on this demo. Connect Supabase to receive it centrally.';
   e.target.reset();
 });
+const menu = document.querySelector('.menu');
+const nav = document.querySelector('.navbar nav');
+
+menu.addEventListener('click', () => {
+  nav.classList.toggle('open');
+});
+
+document.querySelectorAll('.navbar nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    nav.classList.remove('open');
+  });
+});
