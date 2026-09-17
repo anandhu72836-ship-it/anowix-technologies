@@ -3,306 +3,533 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anowix Technologies - Admin Dashboard</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Anowix Technologies</title>
 
 <style>
-*{box-sizing:border-box}
-body{
+*{
+  box-sizing:border-box;
   margin:0;
-  font-family:Arial,sans-serif;
-  background:#f5f7fa;
-  color:#111827
+  padding:0;
 }
-header{
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,sans-serif;
   background:#050608;
   color:white;
-  padding:18px 5%;
+  line-height:1.6;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#050608;
+  border-bottom:1px solid #20242b;
+  padding:16px 5%;
   display:flex;
   justify-content:space-between;
-  align-items:center
-}
-header h1{margin:0;font-size:20px}
-button{
-  border:0;
-  padding:11px 18px;
-  border-radius:7px;
-  cursor:pointer;
-  color:white;
-  background:#111827
-}
-.logout{background:#dc2626}
-.refresh{background:#2563eb;margin-bottom:20px}
-
-.container{
-  width:92%;
-  max-width:1200px;
-  margin:auto;
-  padding:25px 0
+  align-items:center;
 }
 
-.login,.card,.stat{
-  background:white;
-  border-radius:12px;
-  box-shadow:0 3px 15px rgba(0,0,0,.08)
-}
-
-.login{
-  max-width:400px;
-  margin:70px auto;
-  padding:28px
-}
-
-input,textarea,select{
-  width:100%;
-  padding:12px;
-  margin:7px 0 12px;
-  border:1px solid #d1d5db;
-  border-radius:7px
-}
-
-textarea{min-height:90px}
-
-.dashboard{display:none}
-
-.stats{
+.logo{
   display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-  margin:20px 0
+  align-items:center;
+  gap:10px;
 }
 
-.stat{
-  flex:1;
-  min-width:200px;
-  padding:22px;
-  text-align:center
+.logo img{
+  width:45px;
+  height:45px;
+  object-fit:contain;
 }
 
-.stat h3{
-  color:#6b7280;
-  margin:0 0 8px
+.logo strong{
+  font-size:20px;
 }
 
-.stat h2{font-size:35px;margin:0}
+.navbar nav{
+  display:flex;
+  align-items:center;
+  gap:25px;
+}
+
+.navbar nav a{
+  color:#ddd;
+  font-size:15px;
+}
+
+.navbar nav a:hover{
+  color:#00d4ff;
+}
+
+.menu{
+  display:none;
+  font-size:28px;
+  cursor:pointer;
+}
+
+.hero{
+  min-height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:70px 5%;
+  background:linear-gradient(135deg,#050608,#101827);
+}
+
+.hero h1{
+  font-size:clamp(38px,7vw,72px);
+  margin-bottom:15px;
+}
+
+.hero h1 span{
+  color:#00d4ff;
+}
+
+.hero p{
+  max-width:700px;
+  margin:auto;
+  color:#c7cbd1;
+  font-size:18px;
+}
+
+.btn{
+  display:inline-block;
+  margin-top:25px;
+  padding:13px 24px;
+  background:#00a8cc;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+section{
+  padding:70px 5%;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.section-title h2{
+  font-size:35px;
+}
+
+.section-title p{
+  color:#aaa;
+}
+
+.cards{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:22px;
+}
 
 .card{
-  padding:22px;
-  margin-bottom:25px;
-  overflow-x:auto
+  background:#101318;
+  border:1px solid #252b34;
+  border-radius:12px;
+  padding:25px;
 }
 
-.card h2{margin-top:0}
+.card h3{
+  margin-bottom:10px;
+  color:#00d4ff;
+}
 
-table{
+.card p{
+  color:#bbb;
+}
+
+.program-btn{
+  margin-top:18px;
+  padding:10px 17px;
+  border:0;
+  border-radius:7px;
+  background:#00a8cc;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.contact-box{
+  max-width:650px;
+  margin:auto;
+  background:#101318;
+  padding:30px;
+  border-radius:12px;
+}
+
+input,textarea{
   width:100%;
-  border-collapse:collapse;
-  min-width:650px
+  padding:13px;
+  margin:7px 0 15px;
+  border-radius:7px;
+  border:1px solid #303640;
+  background:#080a0d;
+  color:white;
 }
 
-th,td{
-  padding:11px;
-  border-bottom:1px solid #e5e7eb;
-  text-align:left
+textarea{
+  min-height:120px;
 }
 
-th{background:#f3f4f6}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px
+.submit{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:7px;
+  background:#00a8cc;
+  color:white;
+  font-weight:bold;
 }
 
-.form-grid .full{grid-column:1/-1}
-
-.add-btn{background:#16a34a}
-
-.delete-btn{
-  background:#dc2626;
-  padding:7px 12px
-}
-
-#message{
+#formStatus,
+#programStatus{
   margin-top:12px;
-  font-weight:bold
+  font-weight:bold;
 }
 
-@media(max-width:600px){
-  header h1{font-size:16px}
-  .container{width:94%}
-  .stat{min-width:100%}
-  .form-grid{grid-template-columns:1fr}
-  .form-grid .full{grid-column:auto}
+footer{
+  text-align:center;
+  padding:30px 5%;
+  border-top:1px solid #20242b;
+  color:#999;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:2000;
+}
+
+.modal.open{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:500px;
+  background:#101318;
+  padding:28px;
+  border-radius:12px;
+  position:relative;
+}
+
+.close{
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:28px;
+  cursor:pointer;
+}
+
+@media(max-width:900px){
+
+  .menu{
+    display:block;
+  }
+
+  .navbar nav{
+    display:none;
+  }
+
+  .navbar nav.open{
+    display:flex;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    padding:16px 5%;
+    background:#050608;
+    border-bottom:1px solid #20242b;
+  }
+
+  .navbar nav.open a{
+    padding:12px 0;
+  }
+
+  .hero{
+    min-height:70vh;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Anowix Technologies — Admin</h1>
-  <button class="logout" id="logoutBtn" style="display:none">Logout</button>
+<!-- NAVBAR -->
+<header class="navbar">
+
+<a href="#home" class="logo">
+<img src="anowix-logo.png" alt="Anowix Technologies">
+<strong>Anowix Technologies</strong>
+</a>
+
+<div class="menu">☰</div>
+
+<nav>
+<a href="#home">Home</a>
+<a href="#about">About</a>
+<a href="#services">Services</a>
+<a href="#programs">Programs</a>
+<a href="#contact">Contact</a>
+</nav>
+
 </header>
 
-<div class="container">
+<!-- HERO -->
+<section class="hero" id="home">
 
-<!-- LOGIN -->
-<div class="login" id="loginBox">
-  <h2>🔐 Admin Login</h2>
+<div>
 
-  <input type="email" id="email" placeholder="Admin Email">
-  <input type="password" id="password" placeholder="Password">
+<h1>Welcome to <span>Anowix Technologies</span></h1>
 
-  <button id="loginBtn">Login</button>
+<p>
+Empowering students, businesses and innovators with
+technology, digital solutions and practical learning.
+</p>
 
-  <div id="message"></div>
-</div>
-
-<!-- DASHBOARD -->
-<div class="dashboard" id="dashboard">
-
-<h2>Welcome, Admin 👋</h2>
-<p>Manage Anowix Technologies website data.</p>
-
-<!-- STATS -->
-<div class="stats">
-
-<div class="stat">
-<h3>Total Registrations</h3>
-<h2 id="registrationCount">0</h2>
-</div>
-
-<div class="stat">
-<h3>Total Enquiries</h3>
-<h2 id="enquiryCount">0</h2>
-</div>
-
-<div class="stat">
-<h3>Total Programs</h3>
-<h2 id="programCount">0</h2>
-</div>
+<a href="#programs" class="btn">Explore Programs</a>
 
 </div>
 
-<button class="refresh" id="refreshBtn">🔄 Refresh Data</button>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+
+<div class="section-title">
+<h2>About Us</h2>
+<p>Technology • Innovation • Growth</p>
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h3>Who We Are</h3>
+<p>
+Anowix Technologies is focused on technology solutions,
+learning opportunities and innovative digital services.
+</p>
+</div>
+
+<div class="card">
+<h3>Our Mission</h3>
+<p>
+To help students and businesses learn, build and grow
+using modern technology.
+</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+
+<div class="section-title">
+<h2>Our Services</h2>
+<p>Technology solutions for modern needs</p>
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h3>Web Development</h3>
+<p>Modern and responsive websites for businesses and organizations.</p>
+</div>
+
+<div class="card">
+<h3>Software Solutions</h3>
+<p>Practical software solutions designed for real-world requirements.</p>
+</div>
+
+<div class="card">
+<h3>AI & ML Solutions</h3>
+<p>Artificial intelligence and machine learning based solutions.</p>
+</div>
+
+<div class="card">
+<h3>Student Programs</h3>
+<p>Internships, workshops and technology learning opportunities.</p>
+</div>
+
+</div>
+
+</section>
 
 <!-- PROGRAMS -->
+<section id="programs">
+
+<div class="section-title">
+<h2>Our Programs</h2>
+<p>Join our learning and internship opportunities</p>
+</div>
+
+<div class="cards">
+
 <div class="card">
-
-<h2>🎓 Manage Programs</h2>
-
-<div class="form-grid">
-
-<div>
-<label>Program Title</label>
-<input id="programTitle" placeholder="Python Full Stack">
+<h3>Python Full Stack</h3>
+<p>Learn Python and full-stack web development.</p>
+<button class="program-btn" data-program="Python Full Stack Internship">
+Apply Now
+</button>
 </div>
 
-<div>
-<label>Type</label>
-<input id="programType" placeholder="Internship">
+<div class="card">
+<h3>Web Development</h3>
+<p>Learn HTML, CSS, JavaScript and modern web development.</p>
+<button class="program-btn" data-program="Web Development Internship">
+Apply Now
+</button>
 </div>
 
-<div class="full">
-<label>Description</label>
-<textarea id="programDescription" placeholder="Program description"></textarea>
-</div>
-
-<div>
-<label>Start Date</label>
-<input type="date" id="programStart">
-</div>
-
-<div>
-<label>End Date</label>
-<input type="date" id="programEnd">
-</div>
-
-<div>
-<label>Fee</label>
-<input type="number" id="programFee" placeholder="0">
-</div>
-
-<div>
-<label>Status</label>
-<select id="programStatus">
-<option value="open">Open</option>
-<option value="closed">Closed</option>
-</select>
+<div class="card">
+<h3>AI & ML</h3>
+<p>Explore artificial intelligence and machine learning concepts.</p>
+<button class="program-btn" data-program="AI & ML Internship">
+Apply Now
+</button>
 </div>
 
 </div>
 
-<br>
+</section>
 
-<button class="add-btn" id="addProgramBtn">
-➕ Add Program
+<!-- CONTACT -->
+<section id="contact">
+
+<div class="section-title">
+<h2>Contact Us</h2>
+<p>Have a question? Send us a message.</p>
+</div>
+
+<div class="contact-box">
+
+<form id="contactForm">
+
+<input
+name="name"
+placeholder="Your Name"
+required
+>
+
+<input
+name="email"
+type="email"
+placeholder="Your Email"
+required
+>
+
+<input
+name="phone"
+placeholder="Phone Number"
+required
+>
+
+<textarea
+name="message"
+placeholder="Your Message"
+required
+></textarea>
+
+<button class="submit" type="submit">
+Send Enquiry
 </button>
 
-<br><br>
+<div id="formStatus"></div>
 
-<table>
-<thead>
-<tr>
-<th>Title</th>
-<th>Type</th>
-<th>Fee</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-</thead>
+</form>
 
-<tbody id="programsBody"></tbody>
-</table>
+<p style="margin-top:20px;color:#bbb;">
+📧 anowixtechnologies123@gmail.com<br>
+📱 7708217553<br>
+💬 WhatsApp: 7708217553
+</p>
 
 </div>
 
-<!-- REGISTRATIONS -->
-<div class="card">
+</section>
 
-<h2>📋 Registrations</h2>
+<!-- FOOTER -->
+<footer>
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Email</th>
-<th>Phone</th>
-<th>Program</th>
-</tr>
-</thead>
+<p>© 2026 Anowix Technologies. All Rights Reserved.</p>
 
-<tbody id="registrationsBody"></tbody>
+</footer>
 
-</table>
+<!-- PROGRAM MODAL -->
+<div class="modal" id="modal">
+
+<div class="modal-box">
+
+<div class="close" id="closeModal">×</div>
+
+<h2 id="modalTitle">Registration</h2>
+
+<p style="color:#aaa;margin-bottom:15px;">
+Selected Program:
+<strong id="selectedProgram"></strong>
+</p>
+
+<form id="programForm">
+
+<input
+name="name"
+placeholder="Your Name"
+required
+>
+
+<input
+name="email"
+type="email"
+placeholder="Your Email"
+required
+>
+
+<input
+name="phone"
+placeholder="Phone Number"
+required
+>
+
+<button class="submit" type="submit">
+Submit Application
+</button>
+
+<div id="programStatus"></div>
+
+</form>
 
 </div>
 
-<!-- ENQUIRIES -->
-<div class="card">
-
-<h2>📩 Enquiries</h2>
-
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Email</th>
-<th>Phone</th>
-<th>Message</th>
-</tr>
-</thead>
-
-<tbody id="enquiriesBody"></tbody>
-
-</table>
-
 </div>
 
-</div>
-</div>
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
@@ -318,364 +545,169 @@ SUPABASE_URL,
 SUPABASE_KEY
 );
 
-const loginBox =
-document.getElementById('loginBox');
+const modal =
+document.getElementById('modal');
 
-const dashboard =
-document.getElementById('dashboard');
+const selectedProgram =
+document.getElementById('selectedProgram');
 
-const message =
-document.getElementById('message');
+const modalTitle =
+document.getElementById('modalTitle');
 
-const logoutBtn =
-document.getElementById('logoutBtn');
+document.querySelectorAll('[data-program]')
+.forEach(button => {
 
-async function login(){
+button.addEventListener('click',()=>{
 
-const email =
-document.getElementById('email').value.trim();
+selectedProgram.textContent =
+button.dataset.program;
 
-const password =
-document.getElementById('password').value;
+modalTitle.textContent =
+'Internship Application';
 
-if(!email || !password){
-message.textContent='Enter email and password.';
-return;
-}
-
-message.textContent='Logging in...';
-
-const {error} =
-await supabaseClient.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-message.textContent='Login failed: '+error.message;
-return;
-}
-
-message.textContent='';
-await checkAdmin();
-
-}
-
-async function checkAdmin(){
-
-const {
-data:{user}
-}=await supabaseClient.auth.getUser();
-
-if(!user){
-loginBox.style.display='block';
-dashboard.style.display='none';
-logoutBtn.style.display='none';
-return;
-}
-
-const {data,error} =
-await supabaseClient
-.from('profiles')
-.select('role')
-.eq('id',user.id)
-.single();
-
-if(error || !data || data.role!=='admin'){
-
-await supabaseClient.auth.signOut();
-
-loginBox.style.display='block';
-dashboard.style.display='none';
-logoutBtn.style.display='none';
-
-message.textContent='Access denied. Admin only.';
-
-return;
-}
-
-loginBox.style.display='none';
-dashboard.style.display='block';
-logoutBtn.style.display='block';
-
-await loadAll();
-
-}
-
-async function loadAll(){
-
-await loadPrograms();
-await loadRegistrations();
-await loadEnquiries();
-
-}
-
-async function loadPrograms(){
-
-const {data,error} =
-await supabaseClient
-.from('programs')
-.select('*')
-.order('created_at',{ascending:false});
-
-const body =
-document.getElementById('programsBody');
-
-body.innerHTML='';
-
-if(error){
-
-body.innerHTML=
-'<tr><td colspan="5">Unable to load programs.</td></tr>';
-
-return;
-}
-
-document.getElementById('programCount')
-.textContent=data.length;
-
-if(data.length===0){
-
-body.innerHTML=
-'<tr><td colspan="5">No programs yet.</td></tr>';
-
-return;
-}
-
-data.forEach(row=>{
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${row.title || ''}</td>
-<td>${row.type || ''}</td>
-<td>${row.fee || 0}</td>
-<td>${row.status || ''}</td>
-<td>
-<button class="delete-btn"
-onclick="deleteProgram(${row.id})">
-Delete
-</button>
-</td>
-`;
-
-body.appendChild(tr);
+modal.classList.add('open');
 
 });
 
+});
+
+document.getElementById('closeModal')
+.addEventListener('click',()=>{
+
+modal.classList.remove('open');
+
+});
+
+modal.addEventListener('click',(event)=>{
+
+if(event.target===modal){
+modal.classList.remove('open');
 }
 
-async function deleteProgram(id){
+});
 
-if(!confirm('Delete this program?')) return;
+document.getElementById('programForm')
+.addEventListener('submit',async(event)=>{
 
-const {error} =
-await supabaseClient
-.from('programs')
-.delete()
-.eq('id',id);
+event.preventDefault();
 
-if(error){
+const form=event.target;
 
-alert('Delete failed: '+error.message);
-return;
+const data=Object.fromEntries(
+new FormData(form)
+);
 
-}
+const registration={
 
-await loadPrograms();
+name:data.name,
+email:data.email,
+phone:data.phone,
+program:selectedProgram.textContent
 
-}
+};
 
-async function addProgram(){
+const status=
+document.getElementById('programStatus');
 
-const title =
-document.getElementById('programTitle').value.trim();
+status.textContent='Submitting...';
 
-const type =
-document.getElementById('programType').value.trim();
+try{
 
-const description =
-document.getElementById('programDescription').value.trim();
-
-const start_date =
-document.getElementById('programStart').value || null;
-
-const end_date =
-document.getElementById('programEnd').value || null;
-
-const fee =
-document.getElementById('programFee').value || 0;
-
-const status =
-document.getElementById('programStatus').value;
-
-if(!title || !type){
-
-alert('Title and Type are required.');
-
-return;
-
-}
-
-const {error} =
-await supabaseClient
-.from('programs')
-.insert([{
-title,
-type,
-description,
-start_date,
-end_date,
-fee,
-status
-}]);
-
-if(error){
-
-alert('Program add failed: '+error.message);
-return;
-
-}
-
-alert('Program added successfully!');
-
-document.getElementById('programTitle').value='';
-document.getElementById('programType').value='';
-document.getElementById('programDescription').value='';
-document.getElementById('programStart').value='';
-document.getElementById('programEnd').value='';
-document.getElementById('programFee').value='';
-
-await loadPrograms();
-
-}
-
-async function loadRegistrations(){
-
-const {data,error} =
+const {error}=
 await supabaseClient
 .from('registrations')
-.select('name,email,phone,program')
-.order('registered_at',{ascending:false});
+.insert([registration]);
 
-const body =
-document.getElementById('registrationsBody');
+if(error) throw error;
 
-body.innerHTML='';
+status.textContent=
+'Registration submitted successfully!';
 
-if(error){
+form.reset();
 
-body.innerHTML=
-'<tr><td colspan="4">Unable to load registrations.</td></tr>';
+}catch(error){
 
-document.getElementById('registrationCount')
-.textContent='0';
+console.error(error);
 
-return;
+status.textContent=
+'Registration failed. Please try again.';
+
 }
-
-document.getElementById('registrationCount')
-.textContent=data.length;
-
-if(data.length===0){
-
-body.innerHTML=
-'<tr><td colspan="4">No registrations yet.</td></tr>';
-
-return;
-}
-
-data.forEach(row=>{
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${row.name || ''}</td>
-<td>${row.email || ''}</td>
-<td>${row.phone || ''}</td>
-<td>${row.program || ''}</td>
-`;
-
-body.appendChild(tr);
 
 });
 
-}
+document.getElementById('contactForm')
+.addEventListener('submit',async(event)=>{
 
-async function loadEnquiries(){
+event.preventDefault();
 
-const {data,error} =
+const form=event.target;
+
+const data=Object.fromEntries(
+new FormData(form)
+);
+
+const enquiry={
+
+name:data.name,
+email:data.email,
+phone:data.phone,
+message:data.message
+
+};
+
+const status=
+document.getElementById('formStatus');
+
+status.textContent='Sending...';
+
+try{
+
+const {error}=
 await supabaseClient
 .from('enquiries')
-.select('name,email,phone,message');
+.insert([enquiry]);
 
-const body =
-document.getElementById('enquiriesBody');
+if(error) throw error;
 
-body.innerHTML='';
+status.textContent=
+'Your enquiry has been submitted successfully!';
 
-if(error){
+form.reset();
 
-body.innerHTML=
-'<tr><td colspan="4">Unable to load enquiries.</td></tr>';
+}catch(error){
 
-document.getElementById('enquiryCount')
-.textContent='0';
+console.error(error);
 
-return;
+status.textContent=
+'Enquiry could not be submitted. Please try again.';
+
 }
-
-document.getElementById('enquiryCount')
-.textContent=data.length;
-
-if(data.length===0){
-
-body.innerHTML=
-'<tr><td colspan="4">No enquiries yet.</td></tr>';
-
-return;
-}
-
-data.forEach(row=>{
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-<td>${row.name || ''}</td>
-<td>${row.email || ''}</td>
-<td>${row.phone || ''}</td>
-<td>${row.message || ''}</td>
-`;
-
-body.appendChild(tr);
 
 });
 
-}
+const menu =
+document.querySelector('.menu');
 
-document
-.getElementById('loginBtn')
-.addEventListener('click',login);
+const nav =
+document.querySelector('.navbar nav');
 
-document
-.getElementById('addProgramBtn')
-.addEventListener('click',addProgram);
+menu.addEventListener('click',()=>{
 
-document
-.getElementById('refreshBtn')
-.addEventListener('click',loadAll);
-
-logoutBtn.addEventListener('click',async()=>{
-
-await supabaseClient.auth.signOut();
-
-loginBox.style.display='block';
-dashboard.style.display='none';
-logoutBtn.style.display='none';
+nav.classList.toggle('open');
 
 });
 
-checkAdmin();
+document.querySelectorAll('.navbar nav a')
+.forEach(link=>{
+
+link.addEventListener('click',()=>{
+
+nav.classList.remove('open');
+
+});
+
+});
 
 </script>
 
